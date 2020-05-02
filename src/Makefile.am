@@ -72,24 +72,30 @@ parse_CFLAGS = $(PCSC_CFLAGS) $(LIBUSB_CFLAGS) -DSIMCLIST_NO_DUMPRESTORE
 
 EXTRA_DIST = Info.plist.src create_Info_plist.pl reader.conf.in \
 	towitoko/COPYING towitoko/README openct/LICENSE openct/README \
-	convert_version.pl 92_pcscd_ccid.rules
+	convert_version.pl 92_pcscd_ccid.rules \
+	create_hwdb.pl 20-usb-smartcard-readers.hwdb
 
 # We can't use install-exec-local since we want to overwrite the install
 # rule. We do not want to _add_ files to install
 install: $(LIBS_TO_INSTALL)
 
+20-usb-smartcard-readers.hwdb: $(srcdir)/../readers/supported_readers.txt create_hwdb.pl
+	./create_hwdb.pl $(srcdir)/../readers/supported_readers.txt $@
+
 INSTALL_UDEV_RULE_FILE=@/bin/echo "***************" ; echo "copy the src/92_pcscd_ccid.rules file in udev directory (/etc/udev/rules.d/)" ; /bin/echo "***************"
+INSTALL_UDEV_HWDB_FILE=@/bin/echo "***************" ; echo "copy the src/20-usb-smartcard-readers.hwdb file in udev directory (/etc/udev/hwdb.d/)" ; /bin/echo "***************"
 
 Info.plist: Info.plist.src $(srcdir)/../readers/supported_readers.txt
 	$(srcdir)/create_Info_plist.pl $(srcdir)/../readers/supported_readers.txt $(srcdir)/Info.plist.src --target=$(CCID_LIB) --version=$(VERSION) $(NOCLASS) > Info.plist
 
-DISTCLEANFILES = tokenparser.c Info.plist
+DISTCLEANFILES = tokenparser.c Info.plist 20-usb-smartcard-readers.hwdb
 
-install_ccid: libccid.la Info.plist
+install_ccid: libccid.la Info.plist 20-usb-smartcard-readers.hwdb
 	$(mkinstalldirs) "$(DESTDIR)$(usbdropdir)/$(CCID_BUNDLE)/Contents/$(BUNDLE_HOST)/"
 	cp Info.plist "$(DESTDIR)$(usbdropdir)/$(CCID_BUNDLE)/Contents/"
 	cp .libs/$(CCID_LIB) "$(DESTDIR)$(usbdropdir)/$(CCID_BUNDLE)/Contents/$(BUNDLE_HOST)/$(CCID_LIB)"
 	$(INSTALL_UDEV_RULE_FILE)
+	$(INSTALL_UDEV_HWDB_FILE)
 
 install_ccidtwin: libccidtwin.la
 	$(mkinstalldirs) "$(DESTDIR)$(ccidtwindir)"
