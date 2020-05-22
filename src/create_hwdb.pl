@@ -31,7 +31,7 @@ while (my $row = <$readers>) {
     my ($vendor, $part, $desc) = split(/:/, $row, 3);
     $vendor =~ s/^0x//g;
     $part =~ s/^0x//g;
-    print { $hwdb } "usb:v${vendor}p${part}*\n ID_SMARTCARD_READER=$desc\n\n"
+    print { $hwdb } "usb:v${vendor}p${part}*\n ID_MODEL_FROM_DATABASE=$desc\n\n"
   }
 }
 
