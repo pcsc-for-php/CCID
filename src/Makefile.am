@@ -73,7 +73,7 @@ parse_CFLAGS = $(PCSC_CFLAGS) $(LIBUSB_CFLAGS) -DSIMCLIST_NO_DUMPRESTORE
 EXTRA_DIST = Info.plist.src create_Info_plist.pl reader.conf.in \
 	towitoko/COPYING towitoko/README openct/LICENSE openct/README \
 	convert_version.pl 92_pcscd_ccid.rules \
-	create_hwdb.pl 20-usb-smartcard-readers.hwdb
+	create_hwdb.pl
 
 # We can't use install-exec-local since we want to overwrite the install
 # rule. We do not want to _add_ files to install
